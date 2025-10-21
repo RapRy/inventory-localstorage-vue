@@ -18,14 +18,14 @@
           </button>
         </div>
 
-        <form @submit="null">
+        <form @submit="handleFormSubmit">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Item Name * </label>
               <input
                 type="text"
                 name="name"
-                v-bind="formData.name"
+                v-model="formData.name"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               />
@@ -35,7 +35,7 @@
               <label class="block text-sm font-medium text-gray-700 mb-2"> Category * </label>
               <select
                 name="category"
-                v-bind="formData.category"
+                v-model="formData.category"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
               >
@@ -58,7 +58,7 @@
               <input
                 type="number"
                 name="quantity"
-                v-bind="formData.quantity"
+                v-model="formData.quantity"
                 min="0"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 required
@@ -70,7 +70,7 @@
               <input
                 type="number"
                 name="price"
-                v-bind="formData.price"
+                v-model="formData.price"
                 step="0.01"
                 min="0"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -83,7 +83,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-2"> Description </label>
             <textarea
               name="description"
-              v-bind="formData.description"
+              v-model="formData.description"
               rows="3"
               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
             ></textarea>
@@ -98,10 +98,10 @@
             </button>
             <button
               type="button"
-              @click="closeForm"
+              @click="resetForm"
               class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition font-semibold"
             >
-              Cancel
+              Clear
             </button>
           </div>
         </form>
@@ -111,6 +111,7 @@
 </template>
 
 <script setup>
+import { STORAGE_KEY } from '@/constant'
 import { ref, defineProps, defineEmits } from 'vue'
 
 const props = defineProps({
@@ -124,12 +125,6 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['closeForm'])
-
-const closeForm = () => {
-  emit('closeForm')
-}
-
 const formData = ref({
   name: '',
   description: '',
@@ -137,4 +132,54 @@ const formData = ref({
   quantity: 0,
   price: 0.0,
 })
+
+const emit = defineEmits(['close-form', 'load-items'])
+
+const closeForm = () => {
+  emit('close-form')
+}
+
+const resetForm = () => {
+  formData.value = {
+    name: '',
+    description: '',
+    category: '',
+    quantity: 0,
+    price: 0.0,
+  }
+}
+
+const handleFormSubmit = (event) => {
+  event.preventDefault()
+
+  if (
+    !formData.value.name ||
+    !formData.value.category ||
+    !formData.value.quantity ||
+    !formData.value.price
+  ) {
+    alert('Please fill in all required fields.')
+    return
+  }
+
+  const itemData = {
+    id: props.editingItem ? props.editingItem.id : Date.now(),
+    name: formData.value.name,
+    description: formData.value.description,
+    category: formData.value.category,
+    quantity: Number(formData.value.quantity),
+    price: parseFloat(formData.value.price).toFixed(2),
+    dateAdded: props.editingItem ? props.editingItem.dateAdded : new Date().toISOString(),
+  }
+
+  const existingItems = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+  if (props.editingItem) {
+    console.log('Editing item:', itemData)
+  } else {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...existingItems, itemData]))
+  }
+
+  resetForm()
+  emit('load-items')
+}
 </script>

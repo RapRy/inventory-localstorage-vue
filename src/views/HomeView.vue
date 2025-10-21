@@ -276,10 +276,10 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {{ item.price.toFixed(2) }}
+                  {{ item.price }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {{ (item.quantity * item.price).toFixed(2) }}
+                  {{ (item.quantity * parseInt(item.price)).toFixed(2) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button @click="null" class="text-indigo-600 hover:text-indigo-900 mr-4">
@@ -299,6 +299,7 @@
         :categories="categories"
         :isFormOpen="isFormOpen"
         @close-form="isFormOpen = false"
+        @load-items="loadItems"
       />
     </div>
   </div>
@@ -307,9 +308,10 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import ItemForm from '@/components/ItemForm.vue'
+import { DEFAULT_CATEGORIES, STORAGE_KEY } from '@/constant'
 
 const items = ref([])
-const categories = ref([])
+const categories = ref([{ id: 1, name: 'Electronics' }])
 const isFormOpen = ref(false)
 const editingItem = ref(null)
 const searchTerm = ref('')
@@ -321,11 +323,15 @@ const categoryFormData = ref({ name: '', description: '' })
 const deleteCategoryConfirm = ref(null)
 
 onMounted(() => {
-  const inventoryitems = localStorage.getItem('inventoryItems')
+  loadItems()
+})
+
+const loadItems = () => {
+  const inventoryitems = localStorage.getItem(STORAGE_KEY)
   if (inventoryitems) {
     items.value = JSON.parse(inventoryitems)
   }
-})
+}
 
 const filteredItems = computed(() => {
   return items.value.filter((item) => {
