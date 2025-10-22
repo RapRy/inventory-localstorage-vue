@@ -285,7 +285,14 @@
                   <button @click="null" class="text-indigo-600 hover:text-indigo-900 mr-4">
                     Edit
                   </button>
-                  <button @click="null" class="text-red-600 hover:text-red-900">Delete</button>
+                  <button
+                    @click="
+                      handleDeleteItemConfirm(true, item.id, `${item.name} (${item.quantity})`)
+                    "
+                    class="text-red-600 hover:text-red-900"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -301,6 +308,13 @@
         @close-form="isFormOpen = false"
         @load-items="loadItems"
       />
+
+      <DeleteModal
+        v-if="deleteConfirm.modal"
+        :text="`Are you sure you want to delete ${deleteConfirm.name}? This action cannot be undone.`"
+        @confirm-delete="handleDelete(deleteConfirm.id)"
+        @cancel-delete="handleDeleteItemConfirm(false, null, '')"
+      />
     </div>
   </div>
 </template>
@@ -308,19 +322,23 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import ItemForm from '@/components/ItemForm.vue'
-import { DEFAULT_CATEGORIES, STORAGE_KEY } from '@/constant'
+import DeleteModal from '@/components/DeleteModal.vue'
+import { STORAGE_KEY } from '@/constant'
 
 const items = ref([])
 const categories = ref([{ id: 1, name: 'Electronics' }])
 const isFormOpen = ref(false)
-const editingItem = ref(null)
+const editingItem = ref(false)
 const searchTerm = ref('')
 const filterCategory = ref('all')
-const deleteConfirm = ref(null)
-const isConfirmOpen = ref(false)
-const editingCategory = ref(null)
+const deleteConfirm = ref({
+  modal: false,
+  id: null,
+  name: '',
+})
+const editingCategory = ref(false)
 const categoryFormData = ref({ name: '', description: '' })
-const deleteCategoryConfirm = ref(null)
+const deleteCategoryConfirm = ref(false)
 
 onMounted(() => {
   loadItems()
@@ -331,6 +349,20 @@ const loadItems = () => {
   if (inventoryitems) {
     items.value = JSON.parse(inventoryitems)
   }
+}
+
+const handleDeleteItemConfirm = (modal, id, name = '') => {
+  deleteConfirm.value = {
+    modal,
+    id,
+    name,
+  }
+}
+
+const handleDelete = (id) => {
+  items.value = items.value.filter((item) => item.id !== id)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value))
+  handleDeleteItemConfirm(false, null, '')
 }
 
 const filteredItems = computed(() => {
