@@ -112,7 +112,7 @@
 
 <script setup>
 import { STORAGE_KEY } from '@/constant'
-import { ref, defineProps, defineEmits } from 'vue'
+import { ref, defineProps, defineEmits, onMounted } from 'vue'
 
 const props = defineProps({
   editingItem: {
@@ -131,6 +131,18 @@ const formData = ref({
   category: '',
   quantity: 0,
   price: 0.0,
+})
+
+onMounted(() => {
+  if (props.editingItem) {
+    formData.value = {
+      name: props.editingItem.name,
+      description: props.editingItem.description,
+      category: props.editingItem.category,
+      quantity: props.editingItem.quantity,
+      price: props.editingItem.price,
+    }
+  }
 })
 
 const emit = defineEmits(['close-form', 'load-items'])
@@ -174,7 +186,11 @@ const handleFormSubmit = (event) => {
 
   const existingItems = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
   if (props.editingItem) {
-    console.log('Editing item:', itemData)
+    const index = existingItems.findIndex((item) => item.id === props.editingItem.id)
+    if (index !== -1) {
+      existingItems[index] = itemData
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(existingItems))
+    }
   } else {
     localStorage.setItem(STORAGE_KEY, JSON.stringify([...existingItems, itemData]))
   }
