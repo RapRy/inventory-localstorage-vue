@@ -22,29 +22,41 @@
         <thead class="bg-gray-50">
           <tr>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              @click="sort('name')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
-              Item Name
+              <div class="flex items-center space-x-1">
+                <span>Item Name</span>
+                <SortIcon :active="sortBy === 'name'" :direction="sortDirection" />
+              </div>
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              @click="sort('category')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
               Category
+              <SortIcon :active="sortBy === 'category'" :direction="sortDirection" />
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              @click="sort('quantity')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
               Quantity
+              <SortIcon :active="sortBy === 'quantity'" :direction="sortDirection" />
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              @click="sort('price')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
               Price
+              <SortIcon :active="sortBy === 'price'" :direction="sortDirection" />
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              @click="sort('totalValue')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
               Total Value
+              <SortIcon :active="sortBy === 'totalValue'" :direction="sortDirection" />
             </th>
             <th
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -54,7 +66,7 @@
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
-          <tr class="hover:bg-gray-50" v-for="item in props.filteredItems" :key="item.id">
+          <tr class="hover:bg-gray-50" v-for="item in sortedItems" :key="item.id">
             <td class="px-6 py-4 whitespace-nowrap">
               <div>
                 <div class="text-sm font-medium text-gray-900">{{ item.name }}</div>
@@ -107,15 +119,56 @@
     </div>
   </div>
 </template>
+
 <script setup>
-import { defineProps, defineEmits } from 'vue'
+import { ref, computed } from 'vue'
+import SortIcon from './SortIcon.vue'
+
 const props = defineProps({
   filteredItems: {
     type: Array,
     required: true,
   },
 })
+
 const emit = defineEmits(['handle-edit-item', 'handle-delete-item-confirm'])
+
+const sortBy = ref('name')
+const sortDirection = ref('asc')
+
+const sort = (column) => {
+  if (sortBy.value === column) {
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortBy.value = column
+    sortDirection.value = 'asc'
+  }
+}
+
+const sortedItems = computed(() => {
+  return [...props.filteredItems].sort((a, b) => {
+    let compareA = a[sortBy.value]
+    let compareB = b[sortBy.value]
+
+    // Handle total value calculation
+    if (sortBy.value === 'totalValue') {
+      compareA = a.quantity * Number(a.price)
+      compareB = b.quantity * Number(b.price)
+    }
+
+    // Convert to numbers for numeric comparisons
+    if (['quantity', 'price', 'totalValue'].includes(sortBy.value)) {
+      compareA = Number(compareA)
+      compareB = Number(compareB)
+    }
+
+    if (sortDirection.value === 'asc') {
+      return compareA > compareB ? 1 : -1
+    } else {
+      return compareA < compareB ? 1 : -1
+    }
+  })
+})
 
 const emitEditItem = (item) => {
   emit('handle-edit-item', item)
