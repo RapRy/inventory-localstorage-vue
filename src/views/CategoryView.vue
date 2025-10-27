@@ -46,17 +46,25 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { CATEGORY_STORAGE_KEY } from '@/constant'
 import DeleteModal from '@/components/DeleteModal.vue'
 import CategoryForm from '@/components/category/CategoryForm.vue'
 import TableList from '@/components/category/TableList.vue'
 import CategoryControls from '@/components/category/CategoryControls.vue'
 
-const categories = ref([
-  { id: 1, name: 'Electronics', description: 'Electronic devices and accessories' },
-  { id: 2, name: 'Furniture', description: 'Home and office furniture' },
-  { id: 3, name: 'Books', description: 'Books and publications' },
-])
+const categories = ref([])
+
+onMounted(() => {
+  loadCategories()
+})
+
+const loadCategories = () => {
+  const storedCategories = localStorage.getItem(CATEGORY_STORAGE_KEY)
+  if (storedCategories) {
+    categories.value = JSON.parse(storedCategories)
+  }
+}
 
 const isFormOpen = ref(false)
 const editingCategory = ref(null)
@@ -91,7 +99,12 @@ const handleDeleteCategoryConfirm = (modal, id, name = '') => {
 
 const handleDelete = (id) => {
   categories.value = categories.value.filter((category) => category.id !== id)
-  handleDeleteCategoryConfirm(false, null, '')
+  localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(categories.value))
+  deleteConfirm.value = {
+    modal: false,
+    id: null,
+    name: '',
+  }
 }
 
 const handleSaveCategory = (categoryData) => {
@@ -104,6 +117,7 @@ const handleSaveCategory = (categoryData) => {
       ...categoryData,
     })
   }
+  localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(categories.value))
   handleCloseForm()
 }
 
