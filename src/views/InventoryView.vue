@@ -65,7 +65,7 @@ import TableList from '@/components/inventory/TableList.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 import InventoryControls from '@/components/inventory/InventoryControls.vue'
 import InventoryStatistics from '@/components/inventory/InventoryStatistics.vue'
-import { STORAGE_KEY } from '@/constant'
+import { STORAGE_KEY, CATEGORY_STORAGE_KEY } from '@/constant'
 
 const items = ref([])
 const isFormOpen = ref(false)
@@ -77,10 +77,9 @@ const deleteConfirm = ref({
   id: null,
   name: '',
 })
-const editingCategory = ref(false)
-const categoryFormData = ref({ name: '', description: '' })
-const deleteCategoryConfirm = ref(false)
-const categories = ref([{ id: 1, name: 'Electronics' }])
+const categories = localStorage.getItem(CATEGORY_STORAGE_KEY)
+  ? JSON.parse(localStorage.getItem(CATEGORY_STORAGE_KEY))
+  : []
 
 onMounted(() => {
   loadItems()

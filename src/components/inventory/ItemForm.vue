@@ -43,7 +43,7 @@
                 <option
                   v-for="category in props.categories"
                   :key="category.id"
-                  :value="category.name"
+                  :value="category.id"
                 >
                   {{ category.name }}
                 </option>
@@ -178,7 +178,7 @@ const handleFormSubmit = (event) => {
     id: props.editingItem ? props.editingItem.id : Date.now(),
     name: formData.value.name,
     description: formData.value.description,
-    category: formData.value.category,
+    category: props.categories.find((cat) => cat.id === formData.value.category),
     quantity: Number(formData.value.quantity),
     price: parseFloat(formData.value.price).toFixed(2),
     dateAdded: props.editingItem ? props.editingItem.dateAdded : new Date().toISOString(),
