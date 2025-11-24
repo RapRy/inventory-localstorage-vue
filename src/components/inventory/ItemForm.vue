@@ -20,7 +20,7 @@
 
         <form @submit="handleFormSubmit">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
+            <div class="col-span-full">
               <label class="block text-sm font-medium text-gray-700 mb-2"> Item Name * </label>
               <input
                 type="text"
@@ -66,11 +66,26 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"> Price ($) * </label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"> Price (PHP) * </label>
               <input
                 type="number"
                 name="price"
                 v-model="formData.price"
+                step="0.01"
+                min="0"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Surcharge (PHP) *
+              </label>
+              <input
+                type="number"
+                name="surcharge"
+                v-model="formData.surcharge"
                 step="0.01"
                 min="0"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -131,6 +146,7 @@ const formData = ref({
   category: '',
   quantity: 0,
   price: 0.0,
+  surcharge: 0.0,
 })
 
 onMounted(() => {
@@ -141,6 +157,7 @@ onMounted(() => {
       category: props.editingItem.category,
       quantity: props.editingItem.quantity,
       price: props.editingItem.price,
+      surcharge: props.editingItem.surcharge,
     }
   }
 })
@@ -158,6 +175,7 @@ const resetForm = () => {
     category: '',
     quantity: 0,
     price: 0.0,
+    surcharge: 0.0,
   }
 }
 
@@ -181,6 +199,7 @@ const handleFormSubmit = (event) => {
     category: props.categories.find((cat) => cat.id === formData.value.category),
     quantity: Number(formData.value.quantity),
     price: parseFloat(formData.value.price).toFixed(2),
+    surcharge: parseFloat(formData.value.surcharge).toFixed(2),
     dateAdded: props.editingItem ? props.editingItem.dateAdded : new Date().toISOString(),
   }
 

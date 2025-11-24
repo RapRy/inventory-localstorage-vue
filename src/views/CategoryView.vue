@@ -105,6 +105,13 @@ const handleDeleteCategoryConfirm = (modal, id, name = '') => {
 
 const handleDelete = (id) => {
   categories.value = categories.value.filter((category) => category.id !== id)
+  const storedInventories = localStorage.getItem(STORAGE_KEY)
+  if (storedInventories) {
+    const filteredInventories = JSON.parse(storedInventories).filter(
+      (item) => item.category.id !== id,
+    )
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredInventories))
+  }
   localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(categories.value))
   deleteConfirm.value = {
     modal: false,
@@ -124,6 +131,21 @@ const handleSaveCategory = (categoryData) => {
     })
   }
   localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(categories.value))
+  if (editingCategory.value) {
+    const storedInventories = localStorage.getItem(STORAGE_KEY)
+
+    const updatedInventory = JSON.parse(storedInventories).map((item) => ({
+      ...item,
+      category:
+        item.category.id === editingCategory.value.id
+          ? { ...item.category, name: categoryData.name }
+          : item.category,
+    }))
+
+    if (storedInventories) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedInventory))
+    }
+  }
   handleCloseForm()
 }
 

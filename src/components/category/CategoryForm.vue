@@ -65,7 +65,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { CATEGORY_STORAGE_KEY } from '@/constant'
 
 const props = defineProps({
   editingCategory: {

@@ -142,9 +142,12 @@ const totalQuantity = computed(() => {
   return items.value.reduce((total, item) => total + item.quantity, 0)
 })
 const totalValue = computed(() => {
-  return items.value.reduce((total, item) => total + item.quantity * item.price, 0)
+  return items.value.reduce(
+    (total, item) => total + item.quantity * (Number(item.price) + Number(item.surcharge)),
+    0,
+  )
 })
 const lowStockItems = computed(() => {
-  return items.value.filter((item) => item.quantity < 10).length
+  return items.value.filter((item) => item.quantity < 2).length
 })
 </script>

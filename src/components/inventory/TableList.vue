@@ -52,6 +52,13 @@
               <SortIcon :active="sortBy === 'price'" :direction="sortDirection" />
             </th>
             <th
+              @click="sort('surcharge')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+            >
+              Surcharge
+              <SortIcon :active="sortBy === 'price'" :direction="sortDirection" />
+            </th>
+            <th
               @click="sort('totalValue')"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
@@ -90,14 +97,17 @@
                 }"
               >
                 {{ item.quantity }}
-                <span class="ml-1 text-xs" v-if="item.quantity < 10">(Low)</span>
+                <span class="ml-1 text-xs" v-if="item.quantity < 2">(Low)</span>
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ item.price }}
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              {{ item.surcharge }}
+            </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ item.quantity * Number(item.price) }}
+              {{ (Number(item.price) + Number(item.surcharge)) * item.quantity }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <button
@@ -157,7 +167,7 @@ const sortedItems = computed(() => {
     }
 
     // Convert to numbers for numeric comparisons
-    if (['quantity', 'price', 'totalValue'].includes(sortBy.value)) {
+    if (['quantity', 'price', 'totalValue', 'surcharge'].includes(sortBy.value)) {
       compareA = Number(compareA)
       compareB = Number(compareB)
     }

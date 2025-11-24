@@ -35,6 +35,19 @@
                 min="0"
                 v-model.number="form.price"
                 class="w-full px-3 py-2 border rounded"
+                disabled
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Surcharge</label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                v-model.number="form.surcharge"
+                class="w-full px-3 py-2 border rounded"
+                disabled
               />
             </div>
 
@@ -75,6 +88,7 @@ const form = ref({
   itemId: '',
   itemName: '',
   quantity: 1,
+  surcharge: 0,
   price: 0,
   notes: '',
 })
@@ -86,17 +100,23 @@ watch(
     if (it) {
       form.value.itemName = it.name
       form.value.price = Number(it.price || 0)
+      form.value.surcharge = Number(it.surcharge || 0)
     } else {
       form.value.itemName = ''
       form.value.price = 0
+      form.value.surcharge = 0
     }
   },
 )
 
-const total = computed(() => (Number(form.value.quantity) || 0) * (Number(form.value.price) || 0))
+const total = computed(
+  () =>
+    (Number(form.value.quantity) || 0) *
+    ((Number(form.value.price) || 0) + (Number(form.value.surcharge) || 0)),
+)
 
 const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(v || 0))
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(Number(v || 0))
 
 const reset = () => {
   form.value = { itemId: '', itemName: '', quantity: 1, price: 0, notes: '' }
