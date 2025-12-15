@@ -47,7 +47,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { CATEGORY_STORAGE_KEY, STORAGE_KEY } from '@/constant'
+import { CATEGORY_STORAGE_KEY, STORAGE_KEY } from '@/utils/constant'
 import DeleteModal from '@/components/DeleteModal.vue'
 import CategoryForm from '@/components/category/CategoryForm.vue'
 import TableList from '@/components/category/TableList.vue'

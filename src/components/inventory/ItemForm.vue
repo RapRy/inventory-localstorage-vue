@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-import { STORAGE_KEY } from '@/constant'
+import { STORAGE_KEY } from '@/utils/constant'
 import { ref, defineProps, defineEmits, onMounted } from 'vue'
 
 const props = defineProps({

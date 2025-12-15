@@ -5,8 +5,8 @@
       <div class="mb-8">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <h1 class="text-4xl font-bold text-gray-900 mb-2">Inventory Management System</h1>
-            <p class="text-gray-600">Manage your inventory with local storage persistence</p>
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Inventory Management</h1>
+            <p class="text-gray-600">Manage your inventory items and stock levels</p>
           </div>
         </div>
       </div>
@@ -65,7 +65,8 @@ import TableList from '@/components/inventory/TableList.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 import InventoryControls from '@/components/inventory/InventoryControls.vue'
 import InventoryStatistics from '@/components/inventory/InventoryStatistics.vue'
-import { STORAGE_KEY, CATEGORY_STORAGE_KEY } from '@/constant'
+import { STORAGE_KEY, CATEGORY_STORAGE_KEY } from '@/utils/constant'
+import { PlusIcon } from '@heroicons/vue/24/solid'
 
 const items = ref([])
 const isFormOpen = ref(false)

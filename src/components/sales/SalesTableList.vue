@@ -59,5 +59,5 @@ const formatDate = (d) => {
 }
 
 const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(v || 0))
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(Number(v || 0))
 </script>
