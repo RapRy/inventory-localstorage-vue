@@ -18,6 +18,8 @@
         :totalQuantity="totalQuantity"
         :totalValue="totalValue"
         :lowStockItems="lowStockItems"
+        :totalSurchargeValue="totalSurchargeValue"
+        :totalPriceValue="totalPriceValue"
       />
       <!-- end statistic -->
 
@@ -148,6 +150,15 @@ const totalValue = computed(() => {
     0,
   )
 })
+
+const totalSurchargeValue = computed(() =>
+  items.value.reduce((acc, s) => acc + (Number(s.surcharge) * s.quantity || 0), 0),
+)
+const totalPriceValue = computed(() =>
+  items.value.reduce((acc, s) => acc + (Number(s.price) * s.quantity || 0), 0),
+)
+
+console.log(totalPriceValue)
 const lowStockItems = computed(() => {
   return items.value.filter((item) => item.quantity < 2).length
 })

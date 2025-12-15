@@ -48,6 +48,7 @@
 
 <script setup>
 import { defineProps } from 'vue'
+import { formatCurrency } from '@/utils/helperfunctions'
 
 const props = defineProps({
   sales: { type: Array, required: true },
@@ -57,7 +58,4 @@ const formatDate = (d) => {
   if (!d) return ''
   return new Date(d).toLocaleDateString('en-US')
 }
-
-const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(Number(v || 0))
 </script>

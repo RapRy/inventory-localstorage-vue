@@ -101,6 +101,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+import { formatCurrency } from '@/utils/helperfunctions'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -139,12 +140,9 @@ watch(
 
 const total = computed(
   () =>
-    (Number(form.value.quantity) || 0) * (Number(form.value.price) || 0) +
-    (Number(form.value.surcharge) || 0),
+    (Number(form.value.quantity) || 0) *
+    ((Number(form.value.price) || 0) + (Number(form.value.surcharge) || 0)),
 )
-
-const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(v || 0))
 
 const reset = () => {
   form.value = {

@@ -39,6 +39,30 @@
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="flex items-center justify-between">
         <div>
+          <p class="text-gray-500 text-sm">Total Surcharge Value</p>
+          <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(totalSurchargeValue) }}</p>
+        </div>
+        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+          <CurrencyDollarIcon class="w-6 h-6 text-purple-600" />
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Total Price Value</p>
+          <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(totalPriceValue) }}</p>
+        </div>
+        <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+          <CurrencyDollarIcon class="w-6 h-6 text-purple-600" />
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center justify-between">
+        <div>
           <p class="text-gray-500 text-sm">Low Stock Items</p>
           <p class="text-3xl font-bold text-gray-900">{{ lowStockItems }}</p>
         </div>
@@ -57,6 +81,7 @@ import {
   CurrencyDollarIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/vue/24/solid'
+import { formatCurrency } from '@/utils/helperfunctions'
 
 const props = defineProps({
   totalItems: {
@@ -75,8 +100,13 @@ const props = defineProps({
     type: Number,
     required: true,
   },
+  totalSurchargeValue: {
+    type: Number,
+    required: true,
+  },
+  totalPriceValue: {
+    type: Number,
+    required: true,
+  },
 })
-
-const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(Number(v || 0))
 </script>

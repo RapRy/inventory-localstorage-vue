@@ -17,6 +17,8 @@
         :transactions="sales.length"
         :avg-sale="avgSale"
         :total-quantity="totalQuantitySold"
+        :total-surcharge="totalSurchargeSales"
+        :total-price="totalPriceSales"
       />
 
       <!-- controls: search + new sale button -->
@@ -61,6 +63,7 @@ import DeleteModal from '@/components/DeleteModal.vue'
 import SalesStatistics from '@/components/sales/SalesStatistics.vue'
 import { SALES_STORAGE_KEY, STORAGE_KEY } from '@/utils/constant'
 import { PlusIcon } from '@heroicons/vue/24/solid'
+import { formatCurrency } from '@/utils/helperfunctions'
 
 const sales = ref([])
 const items = ref([])
@@ -164,8 +167,13 @@ const totalQuantitySold = computed(() =>
 )
 const avgSale = computed(() => (sales.value.length ? totalSales.value / sales.value.length : 0))
 
-const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(v || 0))
+const totalSurchargeSales = computed(() =>
+  sales.value.reduce((acc, s) => acc + (Number(s.surcharge) * s.quantity || 0), 0),
+)
+
+const totalPriceSales = computed(() =>
+  sales.value.reduce((acc, s) => acc + (Number(s.price) * s.quantity || 0), 0),
+)
 
 const formatDate = (d) => {
   if (!d) return ''

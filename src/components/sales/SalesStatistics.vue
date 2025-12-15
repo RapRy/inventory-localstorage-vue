@@ -15,6 +15,30 @@
     <div class="bg-white rounded-lg shadow-md p-6">
       <div class="flex items-center justify-between">
         <div>
+          <p class="text-gray-500 text-sm">Total Surcharge Sale</p>
+          <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(totalSurcharge) }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-none">
+          <CurrencyDollarIcon class="w-6 h-6 text-blue-600" />
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Total Price Sale</p>
+          <p class="text-3xl font-bold text-gray-900">{{ formatCurrency(totalPrice) }}</p>
+        </div>
+        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-none">
+          <CurrencyDollarIcon class="w-6 h-6 text-blue-600" />
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center justify-between">
+        <div>
           <p class="text-gray-500 text-sm">Transactions</p>
           <p class="text-3xl font-bold text-gray-900">{{ transactions }}</p>
         </div>
@@ -57,14 +81,14 @@ import {
   ChartBarIcon,
   ShoppingCartIcon,
 } from '@heroicons/vue/24/solid'
+import { formatCurrency } from '@/utils/helperfunctions'
 
 const props = defineProps({
   totalSales: { type: Number, required: true },
   transactions: { type: Number, required: true },
   avgSale: { type: Number, required: true },
   totalQuantity: { type: Number, required: true },
+  totalSurcharge: { type: Number, required: true },
+  totalPrice: { type: Number, required: true },
 })
-
-const formatCurrency = (v) =>
-  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'PHP' }).format(Number(v || 0))
 </script>
