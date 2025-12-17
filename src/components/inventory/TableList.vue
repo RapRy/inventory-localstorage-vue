@@ -38,6 +38,13 @@
               <SortIcon :active="sortBy === 'category'" :direction="sortDirection" />
             </th>
             <th
+              @click="sort('kg')"
+              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+            >
+              Kilogram
+              <SortIcon :active="sortBy === 'quantity'" :direction="sortDirection" />
+            </th>
+            <th
               @click="sort('quantity')"
               class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
             >
@@ -91,14 +98,23 @@
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <span
-                :class="{
-                  'item.quantity < 10': 'text-red-600',
-                  'item.quantity > 10': 'text-gray-900',
-                }"
+                v-if="item.isKg"
+                :class="{ 'text-red-600': item.kg < 2, 'text-gray-900': item.kg >= 2 }"
+              >
+                {{ item.kg }}
+                <span class="ml-1 text-xs" v-if="item.kg < 2">(Low)</span>
+              </span>
+              <span v-else>-</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span
+                v-if="!item.isKg"
+                :class="{ 'text-red-600': item.quantity < 2, 'text-gray-900': item.quantity >= 2 }"
               >
                 {{ item.quantity }}
                 <span class="ml-1 text-xs" v-if="item.quantity < 2">(Low)</span>
               </span>
+              <span v-else>-</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
               {{ item.price }}
@@ -107,7 +123,11 @@
               {{ item.surcharge }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-              {{ (Number(item.price) + Number(item.surcharge)) * item.quantity }}
+              {{
+                item.isKg
+                  ? (Number(item.price) + Number(item.surcharge)) * item.kg
+                  : (Number(item.price) + Number(item.surcharge)) * item.quantity
+              }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
               <button

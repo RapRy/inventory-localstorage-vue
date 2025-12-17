@@ -23,6 +23,13 @@
 
       <!-- controls: search + new sale button -->
       <SalesControls :search-term="searchTerm" @update:searchTerm="handleSearchTermUpdate">
+        <RouterLink
+          to="/inventory"
+          class="w-full md:w-auto bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition font-semibold flex items-center justify-center gap-2"
+        >
+          <ArchiveBoxIcon class="w-5 h-5" />
+          Back to Inventory
+        </RouterLink>
         <button
           @click="openForm"
           class="w-full md:w-auto bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition font-semibold flex items-center justify-center gap-2"
@@ -62,8 +69,7 @@ import SaleForm from '@/components/sales/SaleForm.vue'
 import DeleteModal from '@/components/DeleteModal.vue'
 import SalesStatistics from '@/components/sales/SalesStatistics.vue'
 import { SALES_STORAGE_KEY, STORAGE_KEY } from '@/utils/constant'
-import { PlusIcon } from '@heroicons/vue/24/solid'
-import { formatCurrency } from '@/utils/helperfunctions'
+import { PlusIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid'
 
 const sales = ref([])
 const items = ref([])

@@ -52,10 +52,38 @@
                 Please create a category first using "Manage Categories"
               </p>
             </div>
-
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"> Quantity * </label>
+              <div class="flex flex-row justify-between">
+                <label class="block text-sm font-medium text-gray-700 mb-2" v-if="formData.isKg">
+                  Kilogram *
+                </label>
+                <label class="block text-sm font-medium text-gray-700 mb-2" v-else>
+                  Quantity *
+                </label>
+                <div class="flex flex-row gap-1 items-center">
+                  <input type="checkbox" v-model="formData.isKg" class="hidden" id="kg" />
+                  <label
+                    for="kg"
+                    class="text-xs font-medium text-purple-700 cursor-pointer"
+                    v-if="formData.isKg"
+                    >Switch to Quantity</label
+                  >
+                  <label for="kg" class="text-xs font-medium text-purple-700 cursor-pointer" v-else
+                    >Switch to Kilogram</label
+                  >
+                </div>
+              </div>
               <input
+                v-if="formData.isKg"
+                type="number"
+                name="kilogram"
+                v-model="formData.kg"
+                min="0"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                v-else
                 type="number"
                 name="quantity"
                 v-model="formData.quantity"
@@ -127,7 +155,7 @@
 
 <script setup>
 import { STORAGE_KEY } from '@/utils/constant'
-import { ref, defineProps, defineEmits, onMounted } from 'vue'
+import { ref, defineProps, defineEmits, onMounted, watch } from 'vue'
 
 const props = defineProps({
   editingItem: {
@@ -147,7 +175,17 @@ const formData = ref({
   quantity: 0,
   price: 0.0,
   surcharge: 0.0,
+  isKg: false,
+  kg: 0,
 })
+
+watch(
+  () => formData.value.isKg,
+  () => {
+    formData.value.kg = 0
+    formData.value.quantity = 0
+  },
+)
 
 onMounted(() => {
   if (props.editingItem) {
@@ -176,16 +214,20 @@ const resetForm = () => {
     quantity: 0,
     price: 0.0,
     surcharge: 0.0,
+    isKg: false,
+    kg: 0,
   }
 }
 
 const handleFormSubmit = (event) => {
+  console.log(formData.value)
   event.preventDefault()
 
   if (
     !formData.value.name ||
     !formData.value.category ||
-    !formData.value.quantity ||
+    (!formData.value.isKg && !formData.value.quantity) ||
+    (formData.value.isKg && !formData.value.kg) ||
     !formData.value.price
   ) {
     alert('Please fill in all required fields.')
@@ -201,6 +243,8 @@ const handleFormSubmit = (event) => {
     price: parseFloat(formData.value.price).toFixed(2),
     surcharge: parseFloat(formData.value.surcharge).toFixed(2),
     dateAdded: props.editingItem ? props.editingItem.dateAdded : new Date().toISOString(),
+    isKg: formData.value.isKg,
+    kg: Number(formData.value.kg),
   }
 
   const existingItems = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []

@@ -158,8 +158,7 @@ const totalPriceValue = computed(() =>
   items.value.reduce((acc, s) => acc + (Number(s.price) * s.quantity || 0), 0),
 )
 
-console.log(totalPriceValue)
 const lowStockItems = computed(() => {
-  return items.value.filter((item) => item.quantity < 2).length
+  return items.value.filter((item) => (item.isKg ? item.kg < 2 : item.quantity < 2)).length
 })
 </script>
