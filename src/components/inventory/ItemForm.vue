@@ -76,7 +76,7 @@
               <input
                 v-if="formData.isKg"
                 type="number"
-                name="kilogram"
+                name="kg"
                 v-model="formData.kg"
                 min="0"
                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -155,7 +155,7 @@
 
 <script setup>
 import { STORAGE_KEY } from '@/utils/constant'
-import { ref, defineProps, defineEmits, onMounted, watch } from 'vue'
+import { ref, defineProps, defineEmits, onMounted } from 'vue'
 
 const props = defineProps({
   editingItem: {
@@ -179,24 +179,21 @@ const formData = ref({
   kg: 0,
 })
 
-watch(
-  () => formData.value.isKg,
-  () => {
-    formData.value.kg = 0
-    formData.value.quantity = 0
-  },
-)
-
 onMounted(() => {
+  console.log(props.editingItem)
   if (props.editingItem) {
     formData.value = {
       name: props.editingItem.name,
       description: props.editingItem.description,
-      category: props.editingItem.category,
-      quantity: props.editingItem.quantity,
+      category: props.editingItem.category.id,
+      quantity: String(props.editingItem.quantity ?? 0),
       price: props.editingItem.price,
       surcharge: props.editingItem.surcharge,
+      isKg: props.editingItem.isKg,
+      kg: String(props.editingItem.kg ?? 0),
     }
+
+    console.log(formData.value)
   }
 })
 
@@ -220,7 +217,6 @@ const resetForm = () => {
 }
 
 const handleFormSubmit = (event) => {
-  console.log(formData.value)
   event.preventDefault()
 
   if (
@@ -239,12 +235,12 @@ const handleFormSubmit = (event) => {
     name: formData.value.name,
     description: formData.value.description,
     category: props.categories.find((cat) => cat.id === formData.value.category),
-    quantity: Number(formData.value.quantity),
+    quantity: formData.value.isKg ? 0 : Number(formData.value.quantity),
     price: parseFloat(formData.value.price).toFixed(2),
     surcharge: parseFloat(formData.value.surcharge).toFixed(2),
     dateAdded: props.editingItem ? props.editingItem.dateAdded : new Date().toISOString(),
     isKg: formData.value.isKg,
-    kg: Number(formData.value.kg),
+    kg: formData.value.isKg ? Number(formData.value.kg) : 0,
   }
 
   const existingItems = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
