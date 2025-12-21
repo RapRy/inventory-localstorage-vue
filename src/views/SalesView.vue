@@ -19,6 +19,7 @@
         :total-quantity="totalQuantitySold"
         :total-surcharge="totalSurchargeSales"
         :total-price="totalPriceSales"
+        :total-kg="totalKgSold"
       />
 
       <!-- controls: search + new sale button -->
@@ -70,6 +71,7 @@ import DeleteModal from '@/components/DeleteModal.vue'
 import SalesStatistics from '@/components/sales/SalesStatistics.vue'
 import { SALES_STORAGE_KEY, STORAGE_KEY } from '@/utils/constant'
 import { PlusIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid'
+import { formatDate } from '@/utils/helperfunctions'
 
 const sales = ref([])
 const items = ref([])
@@ -171,22 +173,17 @@ const totalSales = computed(() => sales.value.reduce((acc, s) => acc + (Number(s
 const totalQuantitySold = computed(() =>
   sales.value.reduce((acc, s) => acc + (Number(s.quantity) || 0), 0),
 )
+const totalKgSold = computed(() => sales.value.reduce((acc, s) => acc + (Number(s.kg) || 0), 0))
 const avgSale = computed(() => (sales.value.length ? totalSales.value / sales.value.length : 0))
 
 const totalSurchargeSales = computed(() =>
-  sales.value.reduce((acc, s) => acc + (Number(s.surcharge) * s.quantity || 0), 0),
+  sales.value.reduce(
+    (acc, s) => acc + (Number(s.surcharge) * (s.isKg ? s.kg : s.quantity) || 0),
+    0,
+  ),
 )
 
 const totalPriceSales = computed(() =>
-  sales.value.reduce((acc, s) => acc + (Number(s.price) * s.quantity || 0), 0),
+  sales.value.reduce((acc, s) => acc + (Number(s.price) * (s.isKg ? s.kg : s.quantity) || 0), 0),
 )
-
-const formatDate = (d) => {
-  if (!d) return ''
-  return new Date(d).toLocaleString()
-}
 </script>
-
-<style scoped>
-/* adapted summary card styling to match app look while remaining distinct */
-</style>

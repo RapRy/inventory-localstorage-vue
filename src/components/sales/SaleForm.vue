@@ -30,8 +30,20 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                form.isKg ? 'Kilogram' : 'Quantity'
+              }}</label>
               <input
+                v-if="form.isKg"
+                type="number"
+                min="1"
+                step="0.1"
+                :max="kgMax"
+                v-model.number="form.kg"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <input
+                v-else
                 type="number"
                 min="1"
                 :max="qtyMax"
@@ -111,14 +123,17 @@ const emit = defineEmits(['close-form', 'save-sale'])
 const form = ref({
   itemId: '',
   itemName: '',
-  quantity: 1,
+  quantity: 0,
   surcharge: 0,
+  kg: 0,
   price: 0,
   dateSold: new Date().toISOString().split('T')[0], // today's date by default
   notes: '',
+  isKg: false,
 })
 
 const qtyMax = ref(999)
+const kgMax = ref(999)
 
 watch(
   () => form.value.itemId,
@@ -127,20 +142,28 @@ watch(
     if (it) {
       form.value.itemName = it.name
       form.value.price = Number(it.price || 0)
-      qtyMax.value = Number(it.quantity || 1)
+      qtyMax.value = Number(it.quantity || 0)
       form.value.surcharge = Number(it.surcharge || 0)
+      kgMax.value = Number(it.kg || 0)
+      form.value.isKg = it?.isKg ?? false
+      form.value.quantity = 0
+      form.value.kg = 0
     } else {
       form.value.itemName = ''
       form.value.price = 0
       qtyMax.value = 999
       form.value.surcharge = 0
+      kgMax.value = 999
+      form.value.isKg = false
+      form.value.quantity = 0
+      form.value.kg = 0
     }
   },
 )
 
 const total = computed(
   () =>
-    (Number(form.value.quantity) || 0) *
+    (Number(form.value.isKg ? form.value.kg : form.value.quantity) || 0) *
     ((Number(form.value.price) || 0) + (Number(form.value.surcharge) || 0)),
 )
 
@@ -148,11 +171,13 @@ const reset = () => {
   form.value = {
     itemId: '',
     itemName: '',
-    quantity: 1,
+    quantity: 0,
     surcharge: 0,
     price: 0,
     dateSold: new Date().toISOString().split('T')[0],
     notes: '',
+    kg: 0,
+    isKg: false,
   }
 }
 
@@ -170,6 +195,8 @@ const submit = () => {
     total: total.value,
     dateSold: form.value.dateSold,
     notes: form.value.notes,
+    kg: form.value.kg,
+    isKg: form.value.isKg,
   }
   emit('save-sale', sale)
   reset()

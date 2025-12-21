@@ -8,3 +8,8 @@ export const calculatePriceKg = (weightInKg, pricePerKg) => {
 
   return Number((weightInKg * pricePerKg).toFixed(2))
 }
+
+export const formatDate = (d) => {
+  if (!d) return ''
+  return new Date(d).toLocaleString()
+}

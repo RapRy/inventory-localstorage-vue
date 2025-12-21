@@ -71,6 +71,18 @@
         </div>
       </div>
     </div>
+
+    <div class="bg-white rounded-lg shadow-md p-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-500 text-sm">Kilogram Sold</p>
+          <p class="text-3xl font-bold text-gray-900">{{ totalKg }}</p>
+        </div>
+        <div class="w-12 h-12 bg-teal-100 rounded-lg flex items-center justify-center flex-none">
+          <ShoppingCartIcon class="w-6 h-6 text-teal-600" />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -90,5 +102,6 @@ const props = defineProps({
   totalQuantity: { type: Number, required: true },
   totalSurcharge: { type: Number, required: true },
   totalPrice: { type: Number, required: true },
+  totalKg: { type: Number, required: true },
 })
 </script>
