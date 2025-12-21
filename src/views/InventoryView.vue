@@ -53,6 +53,7 @@
 
       <DeleteModal
         v-if="deleteConfirm.modal"
+        :title="`Confirm Remove ${deleteConfirm.name}`"
         :text="`Are you sure you want to delete ${deleteConfirm.name}? This action cannot be undone.`"
         @confirm-delete="handleDelete(deleteConfirm.id)"
         @cancel-delete="handleDeleteItemConfirm(false, null, '')"

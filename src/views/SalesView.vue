@@ -41,7 +41,11 @@
       </SalesControls>
 
       <!-- table list -->
-      <SalesTableList :sales="filteredSales" @delete-sale-confirm="handleDeleteSaleConfirm" />
+      <SalesTableList
+        :sales="filteredSales"
+        @delete-sale-confirm="handleDeleteSaleConfirm"
+        @void-sale-confirm="handleVoidSaleConfirm"
+      />
 
       <!-- Sale form modal -->
       <SaleForm
@@ -54,9 +58,17 @@
       <!-- delete confirmation -->
       <DeleteModal
         v-if="deleteConfirm.modal"
+        :title="`Confirm Delete Sale`"
         :text="`Delete sale of '${deleteConfirm.name}' on ${formatDate(deleteConfirm.date)}?`"
         @confirm-delete="confirmDelete"
         @cancel-delete="cancelDelete"
+      />
+      <DeleteModal
+        v-if="voidConfirm.modal"
+        :title="`Confirm Void Sale`"
+        :text="`Void sale of '${voidConfirm.name}' on ${formatDate(voidConfirm.date)}?`"
+        @confirm-delete="confirmVoid"
+        @cancel-delete="cancelVoid"
       />
     </div>
   </div>
@@ -77,6 +89,7 @@ const sales = ref([])
 const items = ref([])
 const isFormOpen = ref(false)
 const deleteConfirm = ref({ modal: false, id: null, name: '', date: '' })
+const voidConfirm = ref({ modal: false, id: null, name: '', date: '' })
 const searchTerm = ref('')
 
 onMounted(() => {
@@ -104,6 +117,34 @@ const loadItems = () => {
   }
 }
 
+const persistInventory = (sale) => {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(
+        items.value.map((item) => {
+          if (sale.isKg) {
+            return {
+              ...item,
+              kg: item.id === sale.itemId ? Number(item.kg) + Number(sale.kg) : item.kg,
+            }
+          } else {
+            return {
+              ...item,
+              quantity:
+                item.id === sale.itemId
+                  ? Number(item.quantity) + Number(sale.quantity)
+                  : item.quantity,
+            }
+          }
+        }),
+      ),
+    )
+  } catch (e) {
+    console.log('Failed to persist inventory to localStorage', e)
+  }
+}
+
 const persistSales = () => {
   try {
     localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(sales.value))
@@ -126,10 +167,15 @@ const handleSaveSale = (sale) => {
   if (sale.itemId) {
     const idx = items.value.findIndex((i) => i.id === sale.itemId)
     if (idx > -1) {
-      items.value[idx].quantity = Math.max(
-        0,
-        (Number(items.value[idx].quantity) || 0) - Number(sale.quantity || 0),
-      )
+      if (sale.isKg) {
+        items.value[idx].kg = Math.max(0, (Number(items.value[idx].kg) || 0) - Number(sale.kg || 0))
+      } else {
+        items.value[idx].quantity = Math.max(
+          0,
+          (Number(items.value[idx].quantity) || 0) - Number(sale.quantity || 0),
+        )
+      }
+
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value))
       } catch (e) {
@@ -152,6 +198,20 @@ const confirmDelete = () => {
   persistSales()
   cancelDelete()
 }
+
+const handleVoidSaleConfirm = (id, name, date) =>
+  (voidConfirm.value = { modal: true, id, name, date })
+
+const confirmVoid = () => {
+  if (voidConfirm.value.id == null) return
+  const transaction = sales.value.find((item) => item.id === voidConfirm.value.id)
+  sales.value = sales.value.filter((item) => item.id !== voidConfirm.value.id)
+  persistInventory(transaction)
+  persistSales()
+  cancelVoid()
+}
+
+const cancelVoid = () => (voidConfirm.value = { modal: false, id: null, name: '', date: '' })
 
 const cancelDelete = () => {
   deleteConfirm.value = { modal: false, id: null, name: '', date: '' }

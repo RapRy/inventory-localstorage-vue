@@ -39,6 +39,12 @@
             </td>
             <td class="px-6 py-4 text-sm font-medium">
               <button
+                @click="$emit('void-sale-confirm', s.id, s.itemName, s.dateSold)"
+                class="text-yellow-600 hover:text-yellow-800 mr-4"
+              >
+                Void
+              </button>
+              <button
                 @click="$emit('delete-sale-confirm', s.id, s.itemName, s.dateSold)"
                 class="text-red-600 hover:text-red-800"
               >

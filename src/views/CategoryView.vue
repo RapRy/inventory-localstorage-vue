@@ -37,6 +37,7 @@
       <!-- Delete Confirmation Modal -->
       <DeleteModal
         v-if="deleteConfirm.modal"
+        :title="`Confirm Delete Category`"
         :text="`Are you sure you want to delete category '${deleteConfirm.name}'? This action cannot be undone.`"
         @confirm-delete="handleDelete(deleteConfirm.id)"
         @cancel-delete="handleDeleteCategoryConfirm(false, null, '')"

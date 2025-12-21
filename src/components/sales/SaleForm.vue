@@ -58,6 +58,7 @@
                 type="number"
                 step="0.01"
                 min="0"
+                readonly
                 v-model.number="form.price"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
@@ -70,8 +71,24 @@
                 step="0.01"
                 min="0"
                 v-model.number="form.surcharge"
+                readonly
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Discount / Deduction
+              </label>
+              <input
+                type="number"
+                step="1"
+                min="0"
+                :max="form.surcharge"
+                v-model.number="form.deduction"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <span class="text-xs text-blue-400"> Amount will be deducted from the Surcharge</span>
             </div>
 
             <div>
@@ -127,6 +144,7 @@ const form = ref({
   surcharge: 0,
   kg: 0,
   price: 0,
+  deduction: 0,
   dateSold: new Date().toISOString().split('T')[0], // today's date by default
   notes: '',
   isKg: false,
