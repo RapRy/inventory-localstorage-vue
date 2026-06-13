@@ -53,25 +53,17 @@ import DeleteModal from '@/components/DeleteModal.vue'
 import CategoryForm from '@/components/category/CategoryForm.vue'
 import TableList from '@/components/category/TableList.vue'
 import CategoryControls from '@/components/category/CategoryControls.vue'
+import { useCategories } from '@/composables/useGraphQL'
 
-const categories = ref([])
+const { categories, fetchCategories } = useCategories()
 
-onMounted(() => {
-  loadCategories()
-})
-
-const loadCategories = () => {
-  const storedCategories = localStorage.getItem(CATEGORY_STORAGE_KEY)
-  const storedInventories = localStorage.getItem(STORAGE_KEY)
-  if (storedCategories) {
-    categories.value = JSON.parse(storedCategories)
-    categories.value.forEach((category) => {
-      category.itemCount = storedInventories
-        ? JSON.parse(storedInventories).filter((item) => item.category.id === category.id).length
-        : 0
-    })
+onMounted(async () => {
+  try {
+    await fetchCategories()
+  } catch (err) {
+    console.error('Failed to fetch categories from API:', err)
   }
-}
+})
 
 const isFormOpen = ref(false)
 const editingCategory = ref(null)
